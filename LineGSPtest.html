@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>LINE情報入力フォーム</title>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+</head>
+<body>
+    <h2>LINE IDと個人情報を入力してください</h2>
+    <form id="infoForm">
+        <label for="name">個人名：</label>
+        <input type="text" id="name" placeholder="個人名" required><br><br>
+        <label for="company">企業名：</label>
+        <input type="text" id="company" placeholder="企業名" required><br><br>
+        <button type="button" onclick="sendData()">送信</button>
+    </form>
+
+    <script>
+        async function sendData() {
+            // LIFFの初期化
+            await liff.init({ liffId: "2006940981" });
+
+            // ユーザーのLINEプロフィール情報を取得
+            const profile = await liff.getProfile();
+            const lineId = profile.userId;  // LINE ID
+
+            // フォームの入力内容を取得
+            const name = document.getElementById("name").value;
+            const company = document.getElementById("company").value;
+
+            // GASにPOSTリクエストを送信
+            const data = { lineId, name, company };
+            
+            fetch("https://script.google.com/macros/s/AKfycby0FLvsOXUrheUJr1hs5HUlZJ6j4uIZxv2vDZLoL0bBj_91_NZ-Hj_KowPAoTEaAU26Vg/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert("情報が送信されました！");
+                document.getElementById("infoForm").reset();  // フォームをリセット
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("送信に失敗しました。");
+            });
+        }
+    </script>
+</body>
+</html>
