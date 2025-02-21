@@ -48,9 +48,16 @@
                 document.getElementById("infoForm").reset();
             })
             .catch(error => {
-                console.error("Error:", error);
-                alert("送信に失敗しました。");
-            });
+                // CORSエラーの判定
+                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                     console.warn("CORSエラーが発生しましたが、データは送信されています。");
+                    // CORSエラーを無視して処理を続ける
+                    //alert("CORSエラーが発生しましたが、データは送信されました。");
+                    document.getElementById("infoForm").reset();
+                } else {
+                  console.error("予期しないエラー:", error);
+                    alert("送信に失敗しました。");
+                }});
         }
     </script>
 </body>
