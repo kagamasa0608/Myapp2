@@ -32,27 +32,26 @@
             // GASにPOSTリクエストを送信
             const data = { lineId, name, company };
             
-            fetch("https://script.google.com/macros/s/XXXXX/exec", {
+            fetch("https://script.google.com/macros/s/AKfycbyUq-xtzv4NsghGZd6eNhhDZUBOjSGA3V2hOWMZk8tZY3SGBYnejCq-dMY0z_CVVC9pBg/exec", {
                 method: "POST",
-                mode: "cors",  // CORS を有効にする
                 headers: { 
-                            "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                lineId: "1234",
-                name: document.getElementById("name").value,
-                company: document.getElementById("company").value
-                })
-})
-.then(response => response.json())
-.then(result => {
-    alert("情報が送信されました！");
-    document.getElementById("infoForm").reset();
-})
-.catch(error => {
-    console.error("Error:", error);
-    alert("送信に失敗しました。");
-});        }
+                        "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                body: new URLSearchParams({
+                        lineId: "1234",
+                        name: document.getElementById("name").value,
+                        company: document.getElementById("company").value
+                        })
+            })
+            .then(response => response.text())  // JSON でなくプレーンテキストとして処理
+            .then(result => {
+                alert("情報が送信されました！");
+                document.getElementById("infoForm").reset();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("送信に失敗しました。");
+            });
     </script>
 </body>
 </html>
