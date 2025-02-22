@@ -18,10 +18,10 @@
     <script>
         async function sendData() {
             // LIFFの初期化
-            await liff.init({ liffId: "2006940981" });
+            await liff.init({ liffId: "2006951148-WNJM4Ldq" });
 
             // ユーザーのLINEプロフィール情報を取得
-            // const profile = await liff.getProfile();
+            const profile = await liff.getProfile();
             const lineId = profile.userId;  // LINE ID
             //const lineId = "1234";  // LINE ID (デバッグ用に固定)
 
