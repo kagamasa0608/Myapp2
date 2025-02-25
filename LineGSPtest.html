@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <title>LINE情報入力フォーム</title>
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script>
+        // ページがロードされたら即座に初期化
+        window.onload = function() {
+            liff.init({ liffId: "006951148-WNJM4Ldq" })
+                .then(() => {
+                    console.log("LIFF init成功", liff.getContext());
+                    // 初期化が完了したらPOSTとか他の処理に進む
+                })
+                .catch((err) => {
+                    console.log("LIFF init失敗", err);
+                });
+        };
+    </script>
 </head>
 <body>
     <h2>LINE IDと個人情報を入力してください</h2>
