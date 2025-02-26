@@ -3,39 +3,40 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
-    padding: 0;
+    padding: 20px; /* スマホで余白を確保 */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 /* フォーム全体のコンテナ */
 .container {
     background-color: white;
-    padding: 20px;
+    padding: 25px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 90%;
-    width: 400px;
-    text-align: center; /* 全体を中央揃え */
+    max-width: 500px; /* PCでは最大500px */
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 /* タイトルを確実に中央揃え */
 .title {
-    font-size: 18px;
+    font-size: 20px; /* スマホで見やすく */
     font-weight: bold;
     text-align: center;
-    display: block; /* ブロック要素として扱う */
+    display: block;
     width: 100%;
-    margin-bottom: 20px; /* フォームとの間隔を確保 */
+    margin-bottom: 20px;
 }
 
 /* フォームのレイアウト */
 form {
     display: flex;
-    flex-direction: column;  /* 縦方向に配置 */
-    align-items: center;  /* フォーム全体を中央揃え */
+    flex-direction: column;
+    align-items: center;
     gap: 15px;
     width: 100%;
 }
@@ -43,22 +44,22 @@ form {
 /* フォーム内のグループ */
 .form-group {
     width: 100%;
-    text-align: left; /* ラベルを左揃えに */
+    text-align: left;
 }
 
 /* ラベルのスタイル */
 label {
-    font-size: 14px;
+    font-size: 16px; /* スマホで大きめに */
     font-weight: bold;
-    display: block; /* ブロック要素として縦並び */
+    display: block;
     margin-bottom: 5px;
 }
 
 /* 入力欄 */
 input {
     width: 100%;
-    padding: 10px;
-    font-size: 14px;
+    padding: 12px; /* 入力しやすく */
+    font-size: 16px; /* スマホで見やすく */
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
@@ -66,16 +67,42 @@ input {
 
 /* 送信ボタン */
 button {
-    background-color: #a52a2a; /* 赤系のボタン */
+    background-color: #28a745;
     color: white;
     border: none;
-    padding: 12px;
-    font-size: 16px;
+    padding: 14px;
+    font-size: 18px;
     cursor: pointer;
     border-radius: 5px;
     width: 100%;
 }
 
 button:hover {
-    background-color: #8b0000; /* 濃い赤 */
+    background-color: #218838;
+}
+
+/* スマホ用の調整 */
+@media screen and (max-width: 600px) {
+    .container {
+        max-width: 95%; /* スマホでは画面いっぱいに広げる */
+        padding: 20px; /* 余白を調整 */
+    }
+    
+    .title {
+        font-size: 22px; /* タイトルを大きめに */
+    }
+    
+    label {
+        font-size: 18px; /* ラベルも大きめに */
+    }
+
+    input {
+        font-size: 18px;
+        padding: 14px;
+    }
+
+    button {
+        font-size: 20px;
+        padding: 16px;
+    }
 }
