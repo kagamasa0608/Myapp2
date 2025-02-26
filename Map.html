@@ -10,7 +10,7 @@
                 navigator.geolocation.getCurrentPosition(position => {
                     let lat = position.coords.latitude;
                     let lng = position.coords.longitude;
-                    let destination = "35.659108,139.703728";
+                    let destination = "13.9133048250854, 100.55421648645299";
                     let mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${destination}&travelmode=driving`;
     
                     window.location.href = mapsUrl;
