@@ -18,13 +18,13 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 90%;
     width: 400px;
-    text-align: center;
+    text-align: center; /* ここでコンテナ内を中央揃え */
 }
 
 /* タイトル（h2）を中央揃え */
 h2 {
     font-size: 18px;
-    text-align: center;
+    text-align: center; /* タイトルを中央にする */
     margin-bottom: 15px;
 }
 
@@ -34,13 +34,14 @@ form {
     flex-direction: column;  /* 縦方向に配置 */
     align-items: center;  /* 全体を中央揃え */
     gap: 10px;
+    width: 100%;
 }
 
 /* ラベルのスタイル */
 label {
     font-size: 14px;
     width: 100%;
-    text-align: left; /* 左寄せ（中央にしたい場合は "center"） */
+    text-align: left; /* ラベルは左揃え */
     font-weight: bold;
     display: block;
     margin-bottom: 5px;
