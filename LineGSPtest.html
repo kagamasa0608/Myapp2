@@ -37,6 +37,7 @@
 
             fetch("https://script.google.com/macros/s/AKfycbyF-mq56u8BH24ZHiqZLVUFgbbfjmKomBnYg_iY34XBtM8QMNSijZu26XI4x27KIggiQg/exec", { 
                 method: "POST",
+                mode: 'cors', // CORSを許可
                 headers: { 
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
