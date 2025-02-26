@@ -82,7 +82,7 @@ button:hover {
 }
 
 /* スマホ用の調整 */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 375px) {
     .container {
         max-width: 95%; /* スマホでは画面いっぱいに広げる */
         padding: 20px; /* 余白を調整 */
