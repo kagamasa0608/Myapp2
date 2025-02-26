@@ -18,14 +18,15 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 90%;
     width: 400px;
-    text-align: center; /* ここでコンテナ内を中央揃え */
+    text-align: center; /* 全体を中央揃え */
 }
 
-/* タイトル（h2）を中央揃え */
+/* タイトル（h2）のスタイル */
 h2 {
     font-size: 18px;
-    text-align: center; /* タイトルを中央にする */
-    margin-bottom: 15px;
+    text-align: center; /* 中央揃え */
+    margin-bottom: 15px; /* フォームと間隔を作る */
+    width: 100%;
 }
 
 /* フォームのレイアウト */
@@ -41,10 +42,10 @@ form {
 label {
     font-size: 14px;
     width: 100%;
-    text-align: left; /* ラベルは左揃え */
+    text-align: left; /* 左揃え */
     font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
+    display: block; /* 縦並びにする */
+    margin-bottom: 5px; /* 入力欄との間隔 */
 }
 
 /* 入力欄 */
@@ -59,7 +60,7 @@ input {
 
 /* 送信ボタン */
 button {
-    background-color: #a72828;
+    background-color: #a52a2a; /* 赤系のボタン */
     color: white;
     border: none;
     padding: 12px;
@@ -70,5 +71,5 @@ button {
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #8b0000; /* 濃い赤 */
 }
