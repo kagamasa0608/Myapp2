@@ -62,7 +62,7 @@ input {
 
 /* 送信ボタン */
 button {
-    background-color: #a52a2a; /* 赤系のボタン */
+    background-color: #28a745; /* */
     color: white;
     border: none;
     padding: 12px;
@@ -73,5 +73,5 @@ button {
 }
 
 button:hover {
-    background-color: #8b0000; /* 濃い赤 */
+    background-color: #218838; /*  */
 }
