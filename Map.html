@@ -6,28 +6,17 @@
     <title>Google Mapsリダイレクト</title>
     <script>
         function redirectToGoogleMaps() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    let lat = position.coords.latitude;
-                    let lng = position.coords.longitude;
-                    let destination = "13.9133048250854, 100.55421648645299";
-                    let mapsUrl = `https://www.google.com/maps/search/?api=1&origin=${lat},${lng}&destination=${destination}&travelmode=driving`;
+            let destination = "13.9133048250854, 100.55421648645299"; // 渋谷スクランブル交差点
+            let mapsUrl = `https://maps.google.com/maps?q=${destination}`;
     
-                    window.location.href = mapsUrl;
-                }, error => {
-                    console.error("位置情報の取得に失敗しました:", error);
-                    alert("位置情報の取得に失敗しました。");
-                });
-            } else {
-                alert("このブラウザでは位置情報がサポートされていません。");
-            }
+            window.location.href = mapsUrl;
         }
     
         window.onload = function() {
             redirectToGoogleMaps();
         };
     </script>
-</head>
+    </head>
 <body>
     <h2>Google Mapsにリダイレクト中...</h2>
 </body>
