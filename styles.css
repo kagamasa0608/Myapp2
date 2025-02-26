@@ -1,4 +1,4 @@
-/* スマホ対応用のスタイル */
+/* スマホ対応のスタイル */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -20,30 +20,38 @@ body {
     text-align: center;
 }
 
+/* タイトル（h2） */
 h2 {
     font-size: 18px;
     margin-bottom: 15px;
 }
 
+/* フォームのスタイル */
 form {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: column;  /* フォームを縦並びに */
+    gap: 15px;
 }
 
+/* ラベルのスタイル */
 label {
     font-size: 14px;
     text-align: left;
+    display: block;  /* ラベルをブロック要素にして縦配置 */
+    margin-bottom: 5px;
 }
 
+/* 入力欄のスタイル */
 input {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
 }
 
+/* 送信ボタン */
 button {
     background-color: #28a745;
     color: white;
@@ -52,6 +60,7 @@ button {
     font-size: 16px;
     cursor: pointer;
     border-radius: 5px;
+    width: 100%;
 }
 
 button:hover {
