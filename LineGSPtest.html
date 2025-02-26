@@ -35,15 +35,15 @@
             data.append('name', name);
             data.append('company', company);
 
-            fetch("https://script.google.com/macros/s/AKfycbw7hpdvdW2kf72g-crHR9dXPlqvGBi33wZQRYGHTtZPnbwDYEOHUq3N6VrW3BsiUDbp4Q/exec", { 
+            fetch("https://script.google.com/macros/s/AKfycbzH9PT55BA1aQ5e8m3jARl1bO6ppeWv-uprBXsQoARbSI6Az8kTNkWhZ6NEyzFCIQ4Lig/exec", { 
                 method: "POST",
                 mode: 'cors', // CORSを許可
                 headers: { 
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/x-www-form-urlencoded"
                 },
-                body: data
+                body: data.toString()
             })
-            .then(response => response.json())  // JSON として処理
+            .then(response => response.text())  // JSON でなくテキストとして処理
             .then(result => {
                 alert("情報が送信されました！");
                 document.getElementById("infoForm").reset();
