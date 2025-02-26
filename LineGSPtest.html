@@ -7,7 +7,8 @@
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 </head>
 <body>
-    <h2>LINE IDと個人情報を入力してください</h2>
+    <div class="container">
+    <h2 class="title">以下の内容を入力してください</h2>
     <form id="infoForm">
         <label for="name">個人名：</label>
         <input type="text" id="name" placeholder="個人名" required><br><br>
@@ -15,6 +16,7 @@
         <input type="text" id="company" placeholder="企業名" required><br><br>
         <button type="button" onclick="sendData()">送信</button>
     </form>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
