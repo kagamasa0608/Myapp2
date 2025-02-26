@@ -7,21 +7,20 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         function redirectToGoogleMaps() {
-            let destination = "13.9133048250854, 100.55421648645299"; // IMPACT
+            let destination = "13.9133048250854, 100.55421648645299"; // 渋谷スクランブル交差点
             let mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=My+Location&destination=${destination}&travelmode=driving`;
 
-            // 1秒後に自動リダイレクト（少し遅延を入れると動作が安定する）
-            setTimeout(() => {
-                window.location.href = mapsUrl;
-            }, 1000);
+            // 新しいタブまたは同じウィンドウで開く
+            window.open(mapsUrl, "_blank"); // "_self" にすると同じウィンドウで開く
         }
 
-        // LIFF初期化 → 成功したらGoogle Mapsにリダイレクト
+        // LIFFの初期化 → 初期化成功したらGoogle Mapsを開く
         window.onload = function() {
             liff.init({ liffId: "YOUR_LIFF_ID" }).then(() => {
                 redirectToGoogleMaps();
             }).catch(err => {
                 console.error("LIFFの初期化に失敗しました: ", err);
+                redirectToGoogleMaps(); // LIFFが失敗してもGoogle Mapsを開く
             });
         };
     </script>
