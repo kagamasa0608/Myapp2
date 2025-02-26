@@ -1,4 +1,3 @@
-<script>
 async function sendData() {
     // LIFFの初期化
     await liff.init({ liffId: "2006951148-WNJM4Ldq" });
@@ -44,4 +43,3 @@ async function sendData() {
           alert(error);
         }});
 }
-</script>
