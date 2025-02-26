@@ -89,20 +89,20 @@ button:hover {
     }
     
     .title {
-        font-size: 40px; /* タイトルを大きめに */
+        font-size: 20px; /* タイトルを大きめに */
     }
     
     label {
-        font-size: 36px; /* ラベルも大きめに */
+        font-size: 18px; /* ラベルも大きめに */
     }
 
     input {
-        font-size: 36px;
+        font-size: 18px;
         padding: 14px;
     }
 
     button {
-        font-size: 40px;
+        font-size: 20px;
         padding: 16px;
     }
 }
