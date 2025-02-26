@@ -4,24 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Mapsリダイレクト</title>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         function redirectToGoogleMaps() {
-            let destination = "13.9133048250854, 100.55421648645299"; // 渋谷スクランブル交差点
-            let mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=My+Location&destination=${destination}&travelmode=driving`;
-
-            // 新しいタブまたは同じウィンドウで開く
-            window.open(mapsUrl, "_blank"); // "_self" にすると同じウィンドウで開く
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    let lat = position.coords.latitude;
+                    let lng = position.coords.longitude;
+                    let destination = "35.659108,139.703728";
+                    let mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${destination}&travelmode=driving`;
+    
+                    window.location.href = mapsUrl;
+                }, error => {
+                    console.error("位置情報の取得に失敗しました:", error);
+                    alert("位置情報の取得に失敗しました。");
+                });
+            } else {
+                alert("このブラウザでは位置情報がサポートされていません。");
+            }
         }
-
-        // LIFFの初期化 → 初期化成功したらGoogle Mapsを開く
+    
         window.onload = function() {
-            liff.init({ liffId: "YOUR_LIFF_ID" }).then(() => {
-                redirectToGoogleMaps();
-            }).catch(err => {
-                console.error("LIFFの初期化に失敗しました: ", err);
-                redirectToGoogleMaps(); // LIFFが失敗してもGoogle Mapsを開く
-            });
+            redirectToGoogleMaps();
         };
     </script>
 </head>
