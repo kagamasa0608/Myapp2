@@ -3,21 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>現在地からの経路案内</title>
+    <title>現在地をLINE Botに送信</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhst6IGvUi4pnMlYO6Z0TFpm7JOc21sy0"></script>
 </head>
 <body>
-    <button onclick="openMap()">現在地から経路を表示</button>
+    <h2>現在地を取得してLINEに送る</h2>
+    <button onclick="sendLocation()">現在地を送信</button>
+    <div id="map" style="width: 100%; height: 400px;"></div>
 
     <script>
-        function openMap() {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                let lat = position.coords.latitude;
-                let lng = position.coords.longitude;
-                let destination = "13.9133048250854, 100.55421648645299"; // 目的地
-                let url = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${destination}&travelmode=driving`;
-                window.location.href = url;
-            });
+        function sendLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    let lat = position.coords.latitude;
+                    let lng = position.coords.longitude;
+
+                    let map = new google.maps.Map(document.getElementById("map"), {
+                        zoom: 15,
+                        center: { lat: lat, lng: lng }
+                    });
+
+                    new google.maps.Marker({
+                        position: { lat: lat, lng: lng },
+                        map: map,
+                        title: "現在地"
+                    });
+
+                    // LINE Botに送信
+                    liff.init({ liffId: "2006951148-WNJM4Ldq" }).then(() => {
+                        liff.sendMessages([{
+                            type: "text",
+                            text: `現在地: https://www.google.com/maps?q=${lat},${lng}`
+                        }]).then(() => {
+                            alert("位置情報を送信しました！");
+                        }).catch((err) => {
+                            alert("送信エラー: " + err);
+                        });
+                    });
+                });
+            } else {
+                alert("位置情報を取得できません");
+            }
         }
     </script>
 </body>
