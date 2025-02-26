@@ -4,16 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Mapsリダイレクト</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         function redirectToGoogleMaps() {
-            let destination = "13.9133048250854, 100.55421648645299"; // 渋谷スクランブル交差点
-            let mapsUrl = `https://maps.google.com/maps?q=${destination}`;
+            let destination = "13.9133048250854, 100.55421648645299";
+            let mapsUrl = `https://www.google.com/maps/search/?api=1&query=${destination}`;
     
-            window.location.href = mapsUrl;
+            // LINEのWebViewではなく外部ブラウザで開く
+            liff.openWindow({
+                url: mapsUrl,
+                external: true
+            });
         }
     
         window.onload = function() {
-            redirectToGoogleMaps();
+            liff.init({ liffId: "YOUR_LIFF_ID" }).then(() => {
+                redirectToGoogleMaps();
+            }).catch(err => {
+                console.error("LIFFの初期化に失敗しました: ", err);
+                redirectToGoogleMaps();
+            });
         };
     </script>
     </head>
