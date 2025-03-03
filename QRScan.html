@@ -5,30 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>スマホ向けQRコードスキャン＋写真撮影</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            margin: 0;
             background: #f0f0f0;
             overflow: hidden; /* 📌 スクロール防止 */
         }
         #canvas {
-            width: 100vw; /* 📌 スマホ画面にフィット */
-            height: 100vh;
-            object-fit: cover;
+            width: 90vw; /* 📌 横幅に合わせる */
             border: 2px solid #000;
             background: black;
+        }
+        #photo {
+            max-width: 90vw; /* 📌 画面幅に合わせる */
+            max-height: 30vh; /* 📌 画面の30%以内に収める */
+            margin-top: 5px;
+            border: 2px solid #000;
         }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <img id="photo" alt="Captured Photo" style="max-width: 100%; margin-top: 10px; border: 2px solid #000;">
+    <img id="photo" alt="Captured Photo">
 
-    <!-- 📌 jsQRライブラリの正しいCDN -->
+    <!-- 📌 jsQRライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <script>
@@ -37,10 +45,11 @@
         const photo = document.getElementById('photo');
         let videoStream;
         let video;
+        let videoAspectRatio = 16 / 9; // デフォルトのアスペクト比（カメラが読み込まれるまで仮の値）
 
         function adjustCanvasSize() {
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight;
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientWidth / videoAspectRatio; // 📌 カメラのアスペクト比に合わせる
         }
 
         // 📌 画面サイズ変更時にリサイズ
@@ -51,8 +60,8 @@
             video: {
                 facingMode: "environment",
                 frameRate: { ideal: 10 },
-                width: { ideal: window.innerWidth },
-                height: { ideal: window.innerHeight }
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
             }
         })
         .then((stream) => {
@@ -62,7 +71,8 @@
             video.setAttribute("playsinline", "true");
             video.play();
 
-            video.addEventListener("loadeddata", () => {
+            video.addEventListener("loadedmetadata", () => {
+                videoAspectRatio = video.videoWidth / video.videoHeight; // 📌 カメラの本来のアスペクト比を取得
                 adjustCanvasSize(); // 📌 初回のサイズ調整
                 drawFrame();
             });
