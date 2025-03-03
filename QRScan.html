@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRコードでピント調整</title>
+    <title>スマホ向けQRコードスキャン＋撮影</title>
 </head>
 <body>
     <video id="video" autoplay playsinline></video>
@@ -17,54 +17,51 @@
         const ctx = canvas.getContext('2d');
         const photo = document.getElementById('photo');
 
-        // A4四隅のQRコード（仮の値）
-        const expectedQRs = ["TOP_LEFT", "TOP_RIGHT", "BOTTOM_LEFT", "BOTTOM_RIGHT"];
-        let detectedQRs = new Set();
-
-        // カメラを起動
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then((stream) => {
-                video.srcObject = stream;
-            })
-            .catch((err) => {
-                console.error("カメラの起動に失敗", err);
-            });
+        // カメラ解像度を指定（適度に小さくする）
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "environment",
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        })
+        .then((stream) => {
+            video.srcObject = stream;
+        })
+        .catch((err) => {
+            console.error("カメラの起動に失敗", err);
+        });
 
         function scanQRCode() {
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+                // canvasのサイズを小さめに設定（処理を軽くする）
+                canvas.width = 640;
+                canvas.height = 480;
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
+
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
 
                 if (qrCode) {
-                    detectedQRs.add(qrCode.data);
-                    console.log("認識したQR:", qrCode.data);
-
-                    // すべてのQRコードを認識したら撮影
-                    if (expectedQRs.every(qr => detectedQRs.has(qr))) {
-                        console.log("A4用紙の全QRコード認識完了！撮影準備中...");
-                        setTimeout(capturePhoto, 500); // 0.5秒待機後に撮影
-                        detectedQRs.clear(); // 連続撮影防止
-                    }
+                    console.log("QRコードの内容:", qrCode.data);
+                    setTimeout(capturePhoto, 500);
                 }
             }
             requestAnimationFrame(scanQRCode);
         }
 
         function capturePhoto() {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            canvas.width = 640;
+            canvas.height = 480;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            const photoData = canvas.toDataURL("image/png");
+            // 圧縮して画像を保存（JPEG, 70%品質）
+            const photoData = canvas.toDataURL("image/jpeg", 0.7);
             photo.src = photoData;
             console.log("写真撮影完了 🎉");
         }
 
-        scanQRCode(); // QRコードスキャン開始
+        scanQRCode();
     </script>
 </body>
 </html>
