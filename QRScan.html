@@ -35,7 +35,7 @@
         function scanQRCode() {
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
                 // canvasのサイズを小さめに設定（処理を軽くする）
-                canvas.width = 640;
+                canvas.width = 480;
                 canvas.height = 480;
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
