@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>スマホ向けQRコードスキャン＋写真撮影</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             display: flex;
             flex-direction: column;
@@ -19,59 +15,28 @@
             background: #f0f0f0;
             overflow: hidden;
         }
-        #canvas {
-            width: 90vw;
-            height: auto;
-            border: 2px solid #000;
-            background: black;
-        }
+        #canvas { width: 90vw; height: auto; border: 2px solid #000; background: black; }
         #overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
+            display: none; justify-content: center; align-items: center;
+            flex-direction: column; color: white;
         }
-        #photo {
-            max-width: 90vw;
-            max-height: 60vh;
-            border: 2px solid white;
-        }
+        #photo { max-width: 90vw; max-height: 60vh; border: 2px solid white; }
         #confirmButton {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background: white;
-            color: black;
-            border: none;
-            cursor: pointer;
+            margin-top: 20px; padding: 10px 20px; font-size: 16px;
+            background: white; color: black; border: none; cursor: pointer;
         }
         #startButton {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 15px 30px;
-            font-size: 18px;
-            background: blue;
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: block; /* 初回表示 */
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            padding: 15px 30px; font-size: 18px; background: blue; color: white;
+            border: none; cursor: pointer; display: block;
         }
     </style>
 </head>
 <body>
     <button id="startButton">カメラを開始</button>
     <canvas id="canvas" style="display: none;"></canvas>
-
-    <!-- 撮影後のオーバーレイ -->
     <div id="overlay">
         <img id="photo" alt="Captured Photo">
         <button id="confirmButton">確認</button>
@@ -89,19 +54,16 @@
         const confirmButton = document.getElementById('confirmButton');
         let videoStream;
         let video;
-        let videoAspectRatio = 16 / 9; // 初期値
+        let videoAspectRatio = 16 / 9;
 
         function adjustCanvasSize() {
             if (video.videoWidth && video.videoHeight) {
                 videoAspectRatio = video.videoWidth / video.videoHeight;
                 canvas.width = canvas.clientWidth;
                 canvas.height = canvas.clientWidth / videoAspectRatio;
-            } else {
-                canvas.width = 640;
-                canvas.height = 360;
             }
         }
-        // 📌 カメラの起動
+
         async function startCamera() {
             try {
                 if (videoStream && videoStream.active) {
@@ -109,6 +71,8 @@
                     return;
                 }
 
+                console.log("カメラ起動中...");
+                
                 videoStream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: "environment",
@@ -118,22 +82,30 @@
                     }
                 });
 
+                console.log("カメラ取得成功:", videoStream);
+
                 if (!video) {
                     video = document.createElement("video");
                     video.setAttribute("playsinline", "true");
                 }
 
+                // 📌 ここが重要: 既存のカメラストリームを明示的にリセット
+                video.srcObject = null;
                 video.srcObject = videoStream;
-                await video.play();
 
-                adjustCanvasSize();
-                drawFrame();
+                await video.play();
+                
+                video.addEventListener("loadedmetadata", () => {
+                    adjustCanvasSize();
+                    drawFrame();
+                });
 
                 startButton.style.display = "none";
                 canvas.style.display = "block";
+
             } catch (err) {
                 alert("カメラの許可を確認してください。");
-                console.error("カメラの起動に失敗", err);
+                console.error("カメラの起動に失敗:", err);
             }
         }
 
@@ -141,13 +113,12 @@
 
         function drawFrame() {
             if (overlay.style.display === "none") {
-                console.log("Drawing frame:", canvas.width, canvas.height);
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 scanQRCode();
             }
             requestAnimationFrame(drawFrame);
         }
-        
+
         function scanQRCode() {
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
@@ -161,10 +132,9 @@
         function capturePhoto() {
             const photoData = canvas.toDataURL("image/jpeg", 0.5);
             photo.src = photoData;
-            overlay.style.display = "flex"; // 📌 撮影後にオーバーレイ表示
+            overlay.style.display = "flex";
         }
 
-        // 📌 「確認」ボタンで元の画面に戻る
         confirmButton.addEventListener("click", () => {
             overlay.style.display = "none";
         });
