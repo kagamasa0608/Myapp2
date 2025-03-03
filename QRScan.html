@@ -16,6 +16,17 @@
             overflow: hidden;
         }
         #canvas { width: 90vw; height: auto; border: 2px solid #000; background: black; }
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            display: none; justify-content: center; align-items: center;
+            flex-direction: column; color: white;
+        }
+        #photo { max-width: 90vw; max-height: 60vh; border: 2px solid white; }
+        #confirmButton {
+            margin-top: 20px; padding: 10px 20px; font-size: 16px;
+            background: white; color: black; border: none; cursor: pointer;
+        }
         #startButton {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             padding: 15px 30px; font-size: 18px; background: blue; color: white;
@@ -27,27 +38,36 @@
     <button id="startButton">カメラを開始</button>
     <canvas id="canvas" style="display: none;"></canvas>
 
+    <!-- 撮影後のオーバーレイ -->
+    <div id="overlay">
+        <img id="photo" alt="Captured Photo">
+        <button id="confirmButton">確認</button>
+    </div>
+
+    <!-- jsQRライブラリ -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
     <script>
         const startButton = document.getElementById("startButton");
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        const overlay = document.getElementById('overlay');
+        const photo = document.getElementById('photo');
+        const confirmButton = document.getElementById('confirmButton');
         let videoStream;
         let video;
+        let videoAspectRatio = 16 / 9;
+        let lastScanTime = 0;
 
         async function startCamera() {
             try {
-                if (videoStream && videoStream.active) {
-                    console.log("カメラはすでに起動中");
-                    return;
-                }
-
                 console.log("カメラ起動中...");
 
                 videoStream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: "environment",
-                        width: { min: 640, ideal: 1280, max: 1920 },
-                        height: { min: 480, ideal: 720, max: 1080 },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
                         frameRate: { ideal: 10 }
                     }
                 });
@@ -59,19 +79,13 @@
                     video.setAttribute("playsinline", "true");
                 }
 
-                // 📌 既存のストリームをクリアしてから設定
                 video.srcObject = null;
                 video.srcObject = videoStream;
                 console.log("video.srcObject 設定完了:", video.srcObject);
 
-                // 📌 play() のエラーハンドリング
-                video.play().then(() => {
-                    console.log("カメラ映像の再生開始");
-                }).catch(err => {
-                    console.error("video.play() のエラー:", err);
-                });
+                await video.play();
+                console.log("カメラ映像の再生開始");
 
-                // 📌 loadedmetadata イベントを確実に設定
                 video.addEventListener("loadedmetadata", () => {
                     console.log("カメラ映像のメタデータ読み込み完了");
                     adjustCanvasSize();
@@ -91,9 +105,9 @@
 
         function adjustCanvasSize() {
             if (video.videoWidth && video.videoHeight) {
-                const videoAspectRatio = video.videoWidth / video.videoHeight;
-                canvas.width = canvas.clientWidth;
-                canvas.height = canvas.clientWidth / videoAspectRatio;
+                videoAspectRatio = video.videoWidth / video.videoHeight;
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
                 console.log(`Canvas サイズ設定: ${canvas.width} x ${canvas.height}`);
             }
         }
@@ -104,8 +118,33 @@
                 return;
             }
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            scanQRCode();
             requestAnimationFrame(drawFrame);
         }
+
+        function scanQRCode() {
+            const now = Date.now();
+            if (now - lastScanTime < 100) return; // 100ms の間隔を設定
+            lastScanTime = now;
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (qrCode) {
+                console.log("QRコードの内容:", qrCode.data);
+                capturePhoto();
+            }
+        }
+
+        function capturePhoto() {
+            const photoData = canvas.toDataURL("image/jpeg", 0.5);
+            photo.src = photoData;
+            overlay.style.display = "flex";
+        }
+
+        confirmButton.addEventListener("click", () => {
+            overlay.style.display = "none";
+        });
     </script>
 </body>
 </html>
