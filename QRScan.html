@@ -17,25 +17,51 @@
             justify-content: center;
             height: 100vh;
             background: #f0f0f0;
-            overflow: hidden; /* 📌 スクロール防止 */
+            overflow: hidden;
         }
         #canvas {
-            width: 90vw; /* 📌 横幅に合わせる */
-            height: auto; /* 📌 高さはJSで動的に設定 */
+            width: 90vw;
+            height: auto;
             border: 2px solid #000;
             background: black;
         }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            display: none; /* 初期状態では非表示 */
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
         #photo {
-            max-width: 90vw; /* 📌 画面幅に合わせる */
-            max-height: 30vh; /* 📌 画面の30%以内に収める */
-            margin-top: 5px;
-            border: 2px solid #000;
+            max-width: 90vw;
+            max-height: 60vh;
+            border: 2px solid white;
+        }
+        #confirmButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <img id="photo" alt="Captured Photo">
+
+    <!-- 📌 撮影後に表示する確認画面（オーバーレイ） -->
+    <div id="overlay">
+        <img id="photo" alt="Captured Photo">
+        <button id="confirmButton">確認</button>
+    </div>
 
     <!-- 📌 jsQRライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -43,10 +69,12 @@
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        const overlay = document.getElementById('overlay');
         const photo = document.getElementById('photo');
+        const confirmButton = document.getElementById('confirmButton');
         let videoStream;
         let video;
-        let videoAspectRatio = 16 / 9; // 📌 初期値（カメラのアスペクト比が取得できるまでの仮設定）
+        let videoAspectRatio = 16 / 9; // 📌 初期値（カメラのアスペクト比）
 
         function adjustCanvasSize() {
             canvas.width = canvas.clientWidth;
@@ -73,7 +101,7 @@
             video.play();
 
             video.addEventListener("loadedmetadata", () => {
-                videoAspectRatio = video.videoWidth / video.videoHeight; // 📌 カメラの本来のアスペクト比を取得
+                videoAspectRatio = video.videoWidth / video.videoHeight; // 📌 カメラのアスペクト比を取得
                 adjustCanvasSize(); // 📌 初回のサイズ調整
                 drawFrame();
             });
@@ -83,8 +111,10 @@
         });
 
         function drawFrame() {
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            scanQRCode();
+            if (overlay.style.display === "none") { // 📌 確認画面が開いていない時のみ描画
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                scanQRCode();
+            }
             requestAnimationFrame(drawFrame);
         }
 
@@ -94,15 +124,20 @@
 
             if (qrCode) {
                 console.log("QRコードの内容:", qrCode.data);
-                setTimeout(capturePhoto, 500);
+                capturePhoto();
             }
         }
 
         function capturePhoto() {
             const photoData = canvas.toDataURL("image/jpeg", 0.5);
             photo.src = photoData;
-            console.log("写真撮影完了 🎉");
+            overlay.style.display = "flex"; // 📌 撮影後にオーバーレイ表示
         }
+
+        // 📌 「確認」ボタンで元の画面に戻る
+        confirmButton.addEventListener("click", () => {
+            overlay.style.display = "none";
+        });
     </script>
 </body>
 </html>
