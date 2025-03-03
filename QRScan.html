@@ -96,9 +96,11 @@
                 videoAspectRatio = video.videoWidth / video.videoHeight;
                 canvas.width = canvas.clientWidth;
                 canvas.height = canvas.clientWidth / videoAspectRatio;
+            } else {
+                canvas.width = 640;
+                canvas.height = 360;
             }
         }
-
         // 📌 カメラの起動
         async function startCamera() {
             try {
@@ -122,15 +124,13 @@
                 }
 
                 video.srcObject = videoStream;
-                await video.play(); // 📌 `play()` を確実に実行
+                await video.play();
 
-                video.addEventListener("loadedmetadata", () => {
-                    adjustCanvasSize();
-                    drawFrame();
-                });
+                adjustCanvasSize();
+                drawFrame();
 
-                startButton.style.display = "none"; // 📌 ボタンを隠す
-                canvas.style.display = "block"; // 📌 カメラ表示
+                startButton.style.display = "none";
+                canvas.style.display = "block";
             } catch (err) {
                 alert("カメラの許可を確認してください。");
                 console.error("カメラの起動に失敗", err);
@@ -140,13 +140,14 @@
         startButton.addEventListener("click", startCamera);
 
         function drawFrame() {
-            if (overlay.style.display === "none") { // 📌 確認画面が開いていない時のみ描画
+            if (overlay.style.display === "none") {
+                console.log("Drawing frame:", canvas.width, canvas.height);
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 scanQRCode();
             }
             requestAnimationFrame(drawFrame);
         }
-
+        
         function scanQRCode() {
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
