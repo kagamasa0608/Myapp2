@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>スマホ向けQRコードスキャン＋写真撮影</title>
     <style>
         body {
@@ -13,11 +13,11 @@
             height: 100vh;
             margin: 0;
             background: #f0f0f0;
+            overflow: hidden; /* 📌 スクロール防止 */
         }
         #canvas {
-            width: 90%;
-            max-width: 640px;
-            aspect-ratio: 16 / 9; /* 📌 PCで縦長にならないように調整 */
+            width: 100vw; /* 📌 スマホ画面にフィット */
+            height: 100vh;
             object-fit: cover;
             border: 2px solid #000;
             background: black;
@@ -38,26 +38,32 @@
         let videoStream;
         let video;
 
-        // 📌 カメラの解像度を調整し、録画モードを防ぐ
+        function adjustCanvasSize() {
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight;
+        }
+
+        // 📌 画面サイズ変更時にリサイズ
+        window.addEventListener("resize", adjustCanvasSize);
+
+        // 📌 カメラをスマホサイズにフィット
         navigator.mediaDevices.getUserMedia({
             video: {
                 facingMode: "environment",
                 frameRate: { ideal: 10 },
-                width: { max: 1280 },
-                height: { max: 720 },
-                aspectRatio: 16/9 // 📌 PCで縦長になるのを防ぐ
+                width: { ideal: window.innerWidth },
+                height: { ideal: window.innerHeight }
             }
         })
         .then((stream) => {
             videoStream = stream;
             video = document.createElement("video");
             video.srcObject = stream;
-            video.setAttribute("playsinline", "true"); // 📌 iOSで全画面にならないようにする
+            video.setAttribute("playsinline", "true");
             video.play();
 
             video.addEventListener("loadeddata", () => {
-                canvas.width = 640;
-                canvas.height = 360;
+                adjustCanvasSize(); // 📌 初回のサイズ調整
                 drawFrame();
             });
         })
@@ -68,7 +74,7 @@
         function drawFrame() {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             scanQRCode();
-            requestAnimationFrame(drawFrame); // 📌 映像を更新し続ける
+            requestAnimationFrame(drawFrame);
         }
 
         function scanQRCode() {
