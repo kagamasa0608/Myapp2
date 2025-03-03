@@ -5,25 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>スマホ向けQRコードスキャン＋写真撮影</title>
     <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+        }
         #canvas {
-            width: 100%;
-            height: auto;
+            width: 90%;
+            max-width: 640px;
+            aspect-ratio: 16 / 9; /* 📌 PCで縦長にならないように調整 */
             object-fit: cover;
+            border: 2px solid #000;
+            background: black;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas> <!-- 📌 カメラ映像はcanvasに直接描画 -->
-    <img id="photo" alt="Captured Photo">
+    <canvas id="canvas"></canvas>
+    <img id="photo" alt="Captured Photo" style="max-width: 100%; margin-top: 10px; border: 2px solid #000;">
 
     <!-- 📌 jsQRライブラリの正しいCDN -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <script>
         const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         const photo = document.getElementById('photo');
         let videoStream;
+        let video;
 
         // 📌 カメラの解像度を調整し、録画モードを防ぐ
         navigator.mediaDevices.getUserMedia({
@@ -31,30 +44,32 @@
                 facingMode: "environment",
                 frameRate: { ideal: 10 },
                 width: { max: 1280 },
-                height: { max: 720 }
+                height: { max: 720 },
+                aspectRatio: 16/9 // 📌 PCで縦長になるのを防ぐ
             }
         })
         .then((stream) => {
             videoStream = stream;
-            const video = document.createElement("video");
+            video = document.createElement("video");
             video.srcObject = stream;
+            video.setAttribute("playsinline", "true"); // 📌 iOSで全画面にならないようにする
             video.play();
 
-            // 📌 Canvasにカメラ映像を描画
             video.addEventListener("loadeddata", () => {
                 canvas.width = 640;
-                canvas.height = 480;
-                function drawFrame() {
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    scanQRCode();
-                    requestAnimationFrame(drawFrame);
-                }
+                canvas.height = 360;
                 drawFrame();
             });
         })
         .catch((err) => {
             console.error("カメラの起動に失敗", err);
         });
+
+        function drawFrame() {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            scanQRCode();
+            requestAnimationFrame(drawFrame); // 📌 映像を更新し続ける
+        }
 
         function scanQRCode() {
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
