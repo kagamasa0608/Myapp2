@@ -89,18 +89,21 @@
                     video = document.createElement("video");
                     video.setAttribute("playsinline", "true");
                 }
-
+                console.log("1")
                 // 既存のカメラストリームを明示的にリセット
                 video.srcObject = null;
                 video.srcObject = videoStream;
+                console.log("2")
 
                 await video.play();
+                console.log("3")
 
                 video.addEventListener("loadedmetadata", () => {
                     adjustCanvasSize();
                     console.log("カメラ映像のメタデータ読み込み完了");
                     drawFrame();
                 });
+                console.log("4")
 
                 startButton.style.display = "none";
                 canvas.style.display = "block";
