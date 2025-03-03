@@ -16,17 +16,6 @@
             overflow: hidden;
         }
         #canvas { width: 90vw; height: auto; border: 2px solid #000; background: black; }
-        #overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
-            display: none; justify-content: center; align-items: center;
-            flex-direction: column; color: white;
-        }
-        #photo { max-width: 90vw; max-height: 60vh; border: 2px solid white; }
-        #confirmButton {
-            margin-top: 20px; padding: 10px 20px; font-size: 16px;
-            background: white; color: black; border: none; cursor: pointer;
-        }
         #startButton {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             padding: 15px 30px; font-size: 18px; background: blue; color: white;
@@ -37,33 +26,13 @@
 <body>
     <button id="startButton">カメラを開始</button>
     <canvas id="canvas" style="display: none;"></canvas>
-    <div id="overlay">
-        <img id="photo" alt="Captured Photo">
-        <button id="confirmButton">確認</button>
-    </div>
-
-    <!-- jsQRライブラリ -->
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <script>
         const startButton = document.getElementById("startButton");
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
-        const overlay = document.getElementById('overlay');
-        const photo = document.getElementById('photo');
-        const confirmButton = document.getElementById('confirmButton');
         let videoStream;
         let video;
-        let videoAspectRatio = 16 / 9;
-
-        function adjustCanvasSize() {
-            if (video.videoWidth && video.videoHeight) {
-                videoAspectRatio = video.videoWidth / video.videoHeight;
-                canvas.width = canvas.clientWidth;
-                canvas.height = canvas.clientWidth / videoAspectRatio;
-                console.log(`Canvas サイズ設定: ${canvas.width} x ${canvas.height}`);
-            }
-        }
 
         async function startCamera() {
             try {
@@ -73,7 +42,7 @@
                 }
 
                 console.log("カメラ起動中...");
-                
+
                 videoStream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: "environment",
@@ -89,21 +58,25 @@
                     video = document.createElement("video");
                     video.setAttribute("playsinline", "true");
                 }
-                console.log("1")
-                // 既存のカメラストリームを明示的にリセット
+
+                // 📌 既存のストリームをクリアしてから設定
                 video.srcObject = null;
                 video.srcObject = videoStream;
-                console.log("2")
+                console.log("video.srcObject 設定完了:", video.srcObject);
 
-                await video.play();
-                console.log("3")
+                // 📌 play() のエラーハンドリング
+                video.play().then(() => {
+                    console.log("カメラ映像の再生開始");
+                }).catch(err => {
+                    console.error("video.play() のエラー:", err);
+                });
 
+                // 📌 loadedmetadata イベントを確実に設定
                 video.addEventListener("loadedmetadata", () => {
-                    adjustCanvasSize();
                     console.log("カメラ映像のメタデータ読み込み完了");
+                    adjustCanvasSize();
                     drawFrame();
                 });
-                console.log("4")
 
                 startButton.style.display = "none";
                 canvas.style.display = "block";
@@ -116,34 +89,23 @@
 
         startButton.addEventListener("click", startCamera);
 
-        function drawFrame() {
-            if (overlay.style.display === "none") {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                scanQRCode();
-                console.log("カメラ映像を描画中...");
+        function adjustCanvasSize() {
+            if (video.videoWidth && video.videoHeight) {
+                const videoAspectRatio = video.videoWidth / video.videoHeight;
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientWidth / videoAspectRatio;
+                console.log(`Canvas サイズ設定: ${canvas.width} x ${canvas.height}`);
             }
+        }
+
+        function drawFrame() {
+            if (!video || !video.videoWidth || !video.videoHeight) {
+                console.warn("drawFrame() 実行時に video の解像度が 0 のためスキップ");
+                return;
+            }
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             requestAnimationFrame(drawFrame);
         }
-
-        function scanQRCode() {
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
-
-            if (qrCode) {
-                console.log("QRコードの内容:", qrCode.data);
-                capturePhoto();
-            }
-        }
-
-        function capturePhoto() {
-            const photoData = canvas.toDataURL("image/jpeg", 0.5);
-            photo.src = photoData;
-            overlay.style.display = "flex";
-        }
-
-        confirmButton.addEventListener("click", () => {
-            overlay.style.display = "none";
-        });
     </script>
 </body>
 </html>
