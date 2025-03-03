@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>スマホ向けQRコードスキャン＋撮影</title>
+    <title>スマホ向けQRコードスキャン＋写真撮影</title>
+    <style>
+        #video {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: none; /* 📌 ビデオの見た目を消す */
+        }
+    </style>
 </head>
 <body>
-    <video id="video" autoplay playsinline></video>
+    <video id="video" autoplay playsinline></video> <!-- 📌 非表示にする -->
     <canvas id="canvas" style="display:none;"></canvas>
     <img id="photo" alt="Captured Photo">
 
@@ -17,12 +25,13 @@
         const ctx = canvas.getContext('2d');
         const photo = document.getElementById('photo');
 
-        // カメラ解像度を指定（適度に小さくする）
+        // 📌 カメラの解像度とフレームレートを調整して録画モードを防ぐ
         navigator.mediaDevices.getUserMedia({
             video: {
                 facingMode: "environment",
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
+                frameRate: { ideal: 10 }, // フレームレートを下げる
+                width: { max: 1280 },
+                height: { max: 720 }
             }
         })
         .then((stream) => {
@@ -34,8 +43,7 @@
 
         function scanQRCode() {
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                // canvasのサイズを小さめに設定（処理を軽くする）
-                canvas.width = 480;
+                canvas.width = 640;
                 canvas.height = 480;
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -55,8 +63,7 @@
             canvas.height = 480;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            // 圧縮して画像を保存（JPEG, 70%品質）
-            const photoData = canvas.toDataURL("image/jpeg", 0.7);
+            const photoData = canvas.toDataURL("image/jpeg", 0.5);
             photo.src = photoData;
             console.log("写真撮影完了 🎉");
         }
