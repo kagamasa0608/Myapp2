@@ -21,6 +21,7 @@
         }
         #canvas {
             width: 90vw; /* 📌 横幅に合わせる */
+            height: auto; /* 📌 高さはJSで動的に設定 */
             border: 2px solid #000;
             background: black;
         }
@@ -45,7 +46,7 @@
         const photo = document.getElementById('photo');
         let videoStream;
         let video;
-        let videoAspectRatio = 16 / 9; // デフォルトのアスペクト比（カメラが読み込まれるまで仮の値）
+        let videoAspectRatio = 16 / 9; // 📌 初期値（カメラのアスペクト比が取得できるまでの仮設定）
 
         function adjustCanvasSize() {
             canvas.width = canvas.clientWidth;
