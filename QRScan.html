@@ -61,6 +61,7 @@
                 videoAspectRatio = video.videoWidth / video.videoHeight;
                 canvas.width = canvas.clientWidth;
                 canvas.height = canvas.clientWidth / videoAspectRatio;
+                console.log(`Canvas サイズ設定: ${canvas.width} x ${canvas.height}`);
             }
         }
 
@@ -89,14 +90,15 @@
                     video.setAttribute("playsinline", "true");
                 }
 
-                // 📌 ここが重要: 既存のカメラストリームを明示的にリセット
+                // 既存のカメラストリームを明示的にリセット
                 video.srcObject = null;
                 video.srcObject = videoStream;
 
                 await video.play();
-                
+
                 video.addEventListener("loadedmetadata", () => {
                     adjustCanvasSize();
+                    console.log("カメラ映像のメタデータ読み込み完了");
                     drawFrame();
                 });
 
@@ -115,6 +117,7 @@
             if (overlay.style.display === "none") {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 scanQRCode();
+                console.log("カメラ映像を描画中...");
             }
             requestAnimationFrame(drawFrame);
         }
